@@ -1,6 +1,8 @@
-import { Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { CreateUserType } from "./user.types";
 import { createUser } from "./user.controller";
+
+const userRoutes = Router();
 
 async function CreateUser(
   request: Request<CreateUserType>,
@@ -20,4 +22,6 @@ async function CreateUser(
     });
   }
 }
-export default CreateUser;
+
+userRoutes.post("/create", CreateUser);
+export default userRoutes;
