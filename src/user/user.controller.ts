@@ -3,7 +3,7 @@ import readUserAction from "./actions/read.user.action";
 import { UserType } from "./user.model";
 import { CreateUserType } from "./user.types";
 import * as argon2 from "argon2";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 async function createUser(userData: CreateUserType): Promise<UserType> {
   try {
