@@ -24,15 +24,7 @@ async function readUser(
       throw new Error("Invalid credentials");
     }
 
-    let passwordValid;
-
-    try {
-      passwordValid = await argon2.verify(user.password, password);
-    } catch (argonError) {
-      const errMsg =
-        argonError instanceof Error ? argonError.message : String(argonError);
-      throw new Error(`Password verification error: ${errMsg}`);
-    }
+    const passwordValid = await argon2.verify(user.password, password);
 
     if (!passwordValid) {
       throw new Error("Invalid credentials");
@@ -43,7 +35,6 @@ async function readUser(
       process.env.JWT_SECRET as string,
       { expiresIn: "1h" }
     );
-
     return { token, user };
   } catch (error: any) {
     throw new Error(error?.message || "Error reading user");
