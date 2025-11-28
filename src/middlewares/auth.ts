@@ -44,9 +44,9 @@ export function RequirePermission(permission: string) {
 
 export const UserModAuthMiddleware = RequirePermission("UPDATE-USERS");
 export const UserDisableAuthMiddleware = RequirePermission("DELETE-USERS");
+export const BookReadAuthMiddleware = RequirePermission("READ-USERS");
 export const BookCreateAuthMiddleware = RequirePermission("CREATE-BOOKS");
 export const BookDisableAuthMiddleware = RequirePermission("DELETE-BOOKS");
-export const BookReadAuthMiddleware = RequirePermission("READ-USERS");
 
 export async function BookModAuthMiddleware(
   req: Request,

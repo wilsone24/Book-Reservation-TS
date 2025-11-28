@@ -2,6 +2,7 @@ import createUserAction from "./actions/create.user.action";
 import loginUserAction from "./actions/login.user.action";
 import readUserAction from "./actions/read.user.action";
 import updateUserAction from "./actions/update.user.action";
+import disableUserAction from "./actions/disable.user.action";
 import { UserType } from "./user.model";
 import { CreateUserType, ReadUserType, UpdateUserType } from "./user.types";
 import * as argon2 from "argon2";
@@ -65,4 +66,12 @@ async function updateUser(
   }
 }
 
-export { createUser, loginUser, readUser, updateUser };
+async function disableUser(targetUserId: string): Promise<void> {
+  try {
+    await disableUserAction(targetUserId);
+  } catch (error: any) {
+    throw new Error(`Error disabling user: ${error.message}`);
+  }
+}
+
+export { createUser, loginUser, readUser, updateUser, disableUser };

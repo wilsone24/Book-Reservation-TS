@@ -1,9 +1,16 @@
 import { Request, Response, Router } from "express";
 import { CreateUserType } from "./user.types";
-import { createUser, loginUser, readUser, updateUser } from "./user.controller";
+import {
+  createUser,
+  loginUser,
+  readUser,
+  updateUser,
+  disableUser,
+} from "./user.controller";
 import {
   BookReadAuthMiddleware,
   UserModAuthMiddleware,
+  UserDisableAuthMiddleware,
 } from "../middlewares/auth";
 
 const userRoutes = Router();
@@ -78,8 +85,24 @@ async function UpdateUser(request: Request, response: Response) {
   }
 }
 
+async function DisableUser(request: Request, response: Response) {
+  const targetUserId = request.params.userId;
+  try {
+    await disableUser(targetUserId);
+    response.status(200).json({
+      message: "Success.",
+    });
+  } catch (error) {
+    response.status(500).json({
+      message: "Failure.",
+      information: (error as any).toString(),
+    });
+  }
+}
+
 userRoutes.post("/create", CreateUser);
 userRoutes.post("/login", LoginUser);
 userRoutes.post("/read", BookReadAuthMiddleware, ReadUser);
 userRoutes.post("/update/:userId", UserModAuthMiddleware, UpdateUser);
+userRoutes.post("/disable/:userId", UserDisableAuthMiddleware, DisableUser);
 export default userRoutes;
