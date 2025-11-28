@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { CreateUserType } from "./user.types";
-import { createUser, loginUser, readUser } from "./user.controller";
+import { createUser, loginUser, readUser, updateUser } from "./user.controller";
 import { BookReadAuthMiddleware } from "../middlewares/auth";
 
 const userRoutes = Router();
@@ -58,7 +58,25 @@ async function ReadUser(request: Request, response: Response) {
   }
 }
 
+async function UpdateUser(request: Request, response: Response) {
+  const userId = request.params.userId;
+  const data = request.body;
+  try {
+    const user = await updateUser(userId, data);
+    response.status(200).json({
+      message: "Success.",
+      user: user,
+    });
+  } catch (error) {
+    response.status(500).json({
+      message: "Failure.",
+      information: (error as any).toString(),
+    });
+  }
+}
+
 userRoutes.post("/create", CreateUser);
 userRoutes.post("/login", LoginUser);
 userRoutes.post("/read", BookReadAuthMiddleware, ReadUser);
+userRoutes.post("/update/:userId", UpdateUser);
 export default userRoutes;

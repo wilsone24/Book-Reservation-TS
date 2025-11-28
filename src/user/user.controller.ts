@@ -1,8 +1,9 @@
 import createUserAction from "./actions/create.user.action";
 import loginUserAction from "./actions/login.user.action";
 import readUserAction from "./actions/read.user.action";
+import updateUserAction from "./actions/update.user.action";
 import { UserType } from "./user.model";
-import { CreateUserType, ReadUserType } from "./user.types";
+import { CreateUserType, ReadUserType, UpdateUserType } from "./user.types";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 
@@ -51,4 +52,16 @@ async function readUser(email: ReadUserType): Promise<UserType> {
   }
 }
 
-export { createUser, loginUser, readUser };
+async function updateUser(
+  user_id: string,
+  data: UpdateUserType
+): Promise<UserType> {
+  try {
+    const user = await updateUserAction(user_id, data);
+    return user;
+  } catch (error: any) {
+    throw new Error(error?.message || "Error updating user");
+  }
+}
+
+export { createUser, loginUser, readUser, updateUser };
