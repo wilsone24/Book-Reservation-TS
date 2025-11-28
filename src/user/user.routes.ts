@@ -1,7 +1,10 @@
 import { Request, Response, Router } from "express";
 import { CreateUserType } from "./user.types";
 import { createUser, loginUser, readUser, updateUser } from "./user.controller";
-import { BookReadAuthMiddleware } from "../middlewares/auth";
+import {
+  BookReadAuthMiddleware,
+  UserModAuthMiddleware,
+} from "../middlewares/auth";
 
 const userRoutes = Router();
 
@@ -78,5 +81,5 @@ async function UpdateUser(request: Request, response: Response) {
 userRoutes.post("/create", CreateUser);
 userRoutes.post("/login", LoginUser);
 userRoutes.post("/read", BookReadAuthMiddleware, ReadUser);
-userRoutes.post("/update/:userId", UpdateUser);
+userRoutes.post("/update/:userId", UserModAuthMiddleware, UpdateUser);
 export default userRoutes;

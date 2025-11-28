@@ -57,6 +57,7 @@ async function updateUser(
   data: UpdateUserType
 ): Promise<UserType> {
   try {
+    if (data.password) data.password = await argon2.hash(data.password);
     const user = await updateUserAction(user_id, data);
     return user;
   } catch (error: any) {
