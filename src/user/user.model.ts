@@ -31,6 +31,7 @@ const UserSchema = new Schema<UserType>(
       default: {
         "UPDATE-USERS": false,
         "DELETE-USERS": false,
+        "READ-USERS": false,
         "CREATE-BOOKS": false,
         "UPDATE-BOOKS": false,
         "DELETE-BOOKS": false,
