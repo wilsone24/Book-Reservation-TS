@@ -2,6 +2,7 @@ import { model, Schema } from "mongoose";
 
 type PermissionsType = {
   [key: string]: boolean;
+  "READ-USERS": boolean;
   "UPDATE-USERS": boolean;
   "DELETE-USERS": boolean;
   "CREATE-BOOKS": boolean;
