@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
-import { createBook } from "./book.controller";
-import { CreateBookType } from "./book.types";
+import { createBook, readOneBook } from "./book.controller";
+import { CreateBookType, BookQueryType } from "./book.types";
 import { BookCreateAuthMiddleware } from "../middlewares/auth";
 
 const bookRoutes = Router();
@@ -24,6 +24,30 @@ async function CreateBook(
   }
 }
 
+async function SearchBooks(
+  request: Request<any, any, any, BookQueryType>,
+  response: Response
+) {
+  try {
+    let results;
+    if (request.query._id) {
+      results = await readOneBook(request.query._id);
+    } else {
+      results = await readBooks(request.query);
+    }
+
+    response.status(230).json({
+      message: "Query results.",
+      results: results,
+    });
+  } catch (error) {
+    response.status(401).json({
+      message: "Invalid query.",
+    });
+  }
+}
+
 bookRoutes.post("/create", BookCreateAuthMiddleware, CreateBook);
+bookRoutes.get("/search", SearchBooks);
 
 export default bookRoutes;
