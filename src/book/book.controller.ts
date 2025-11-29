@@ -2,6 +2,7 @@ import CreateBookAction from "./actions/create.book.action";
 import ReadOneBookAction from "./actions/readone.book.action";
 import ReadBooksAction from "./actions/read.book.action";
 import UpdateBookAction from "./actions/update.book.action";
+import DisableBookAction from "./actions/disable.book.action";
 import { BookType } from "./book.model";
 import { CreateBookType, BookQueryType, UpdateBookType } from "./book.types";
 
@@ -29,6 +30,7 @@ async function readBooks(query: BookQueryType): Promise<BookType[] | BookType> {
       ...query,
       disabled: false,
     };
+
     if (finalQuery.pubDate) {
       finalQuery.pubDate = new Date(finalQuery.pubDate).toISOString();
     }
@@ -45,7 +47,9 @@ async function readOneBook(bookId: string): Promise<BookType | null> {
     if (!bookId) {
       throw new Error("Book ID is required");
     }
+
     const book = await ReadOneBookAction(bookId);
+
     if (book?.disabled) {
       return null;
     }
@@ -66,8 +70,8 @@ async function updateBook(
       throw new Error("Book ID is required");
     }
 
-    const bookExists = await ReadOneBookAction(bookId);
-    if (!bookExists) {
+    const existingBook = await ReadOneBookAction(bookId);
+    if (!existingBook) {
       throw new Error(`Book with ID ${bookId} does not exist`);
     }
 
@@ -78,4 +82,22 @@ async function updateBook(
   }
 }
 
-export { createBook, readBooks, readOneBook, updateBook };
+async function disableBook(bookId: string): Promise<void> {
+  try {
+    if (!bookId) {
+      throw new Error("Book ID is required");
+    }
+
+    const existingBook = await ReadOneBookAction(bookId);
+    if (!existingBook) {
+      throw new Error(`Book with ID ${bookId} does not exist`);
+    }
+
+    await DisableBookAction(bookId);
+  } catch (error) {
+    console.error(`Error disabling book ${bookId}:`, error);
+    throw formatError("Error disabling book", error);
+  }
+}
+
+export { createBook, readBooks, readOneBook, updateBook, disableBook };

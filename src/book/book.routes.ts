@@ -4,12 +4,14 @@ import {
   readOneBook,
   readBooks,
   updateBook,
+  disableBook,
 } from "./book.controller";
 import { CreateBookType, BookQueryType, UpdateBookType } from "./book.types";
 import {
   BookCreateAuthMiddleware,
   BookReadAuthMiddleware,
   BookModAuthMiddleware,
+  BookDisableAuthMiddleware,
 } from "../middlewares/auth";
 
 const bookRoutes = Router();
@@ -77,8 +79,30 @@ async function UpdateBookHandler(
   }
 }
 
+async function DisableBookHandler(
+  req: Request<{ bookId: string }>,
+  res: Response
+) {
+  try {
+    const { bookId } = req.params;
+
+    await disableBook(bookId);
+
+    return res.status(200).json({
+      message: "Success.",
+    });
+  } catch (error) {
+    return sendError(res, 500, "Failure to delete/disable book.", error);
+  }
+}
+
 bookRoutes.post("/create", BookCreateAuthMiddleware, CreateBookHandler);
 bookRoutes.get("/search", BookReadAuthMiddleware, SearchBooksHandler);
 bookRoutes.put("/update/:bookId", BookModAuthMiddleware, UpdateBookHandler);
+bookRoutes.delete(
+  "/disable/:bookId",
+  BookDisableAuthMiddleware,
+  DisableBookHandler
+);
 
 export default bookRoutes;
