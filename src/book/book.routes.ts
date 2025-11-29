@@ -1,7 +1,10 @@
 import { Router, Request, Response } from "express";
 import { createBook, readOneBook, readBooks } from "./book.controller";
 import { CreateBookType, BookQueryType } from "./book.types";
-import { BookCreateAuthMiddleware } from "../middlewares/auth";
+import {
+  BookCreateAuthMiddleware,
+  BookReadAuthMiddleware,
+} from "../middlewares/auth";
 
 const bookRoutes = Router();
 
@@ -51,6 +54,6 @@ async function SearchBooksHandler(
 }
 
 bookRoutes.post("/create", BookCreateAuthMiddleware, CreateBookHandler);
-bookRoutes.get("/search", SearchBooksHandler);
+bookRoutes.get("/search", BookReadAuthMiddleware, SearchBooksHandler);
 
 export default bookRoutes;
