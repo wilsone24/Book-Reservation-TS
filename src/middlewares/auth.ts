@@ -6,6 +6,7 @@ import { decode } from "jsonwebtoken";
 function decodeJwtValues(request: Request): HeaderUserType | null {
   const authHeader = request.headers.authorization;
   if (!authHeader?.startsWith("Bearer ")) return null;
+
   const token = authHeader.split(" ")[1];
   return decode(token) as HeaderUserType;
 }
@@ -18,16 +19,20 @@ async function validateUserPermission(
   if (!user) {
     throw { status: 401, message: "Not authorized." };
   }
+
   const isEnabled = await checkEnabledUserAction(user._id);
   if (!isEnabled) {
     throw { status: 401, message: "User disabled." };
   }
+
   const targetUserId = request.params.userId;
   const hasPermission =
     user.permissions[permission] || (targetUserId && user._id === targetUserId);
+
   if (!hasPermission) {
     throw { status: 403, message: "Permission denied." };
   }
+
   return user;
 }
 
@@ -53,11 +58,13 @@ export async function BookModAuthMiddleware(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  if (req.body.reserved === undefined) {
+  const isReservationChange = req.body.reserved !== undefined;
+
+  if (!isReservationChange) {
     return RequirePermission("UPDATE-BOOKS")(req, res, next);
   }
-  const user = decodeJwtValues(req);
 
+  const user = decodeJwtValues(req);
   if (!user) {
     res.status(401).json({ message: "Not authorized." });
     return;
