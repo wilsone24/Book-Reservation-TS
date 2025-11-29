@@ -10,8 +10,7 @@ import jwt from "jsonwebtoken";
 
 async function createUser(userData: CreateUserType): Promise<UserType> {
   try {
-    const user = await createUserAction(userData);
-    return user;
+    return await createUserAction(userData);
   } catch (error: any) {
     throw new Error(`Error creating user: ${error.message}`);
   }
@@ -22,14 +21,13 @@ async function loginUser(
   password: string
 ): Promise<{ token: string; user: UserType }> {
   try {
-    const user = await loginUserAction({ email: email });
+    const user = await loginUserAction({ email });
     if (!user) {
       throw new Error("Invalid credentials");
     }
 
-    const passwordValid = await argon2.verify(user.password, password);
-
-    if (!passwordValid) {
+    const isValidPassword = await argon2.verify(user.password, password);
+    if (!isValidPassword) {
       throw new Error("Invalid credentials");
     }
 
@@ -38,6 +36,7 @@ async function loginUser(
       process.env.JWT_SECRET as string,
       { expiresIn: "1h" }
     );
+
     return { token, user };
   } catch (error: any) {
     throw new Error(error?.message || "Error reading user");
@@ -46,8 +45,7 @@ async function loginUser(
 
 async function readUser(email: ReadUserType): Promise<UserType> {
   try {
-    const user = await readUserAction(email);
-    return user;
+    return await readUserAction(email);
   } catch (error: any) {
     throw new Error(error?.message || "Error reading user");
   }
@@ -58,9 +56,10 @@ async function updateUser(
   data: UpdateUserType
 ): Promise<UserType> {
   try {
-    if (data.password) data.password = await argon2.hash(data.password);
-    const user = await updateUserAction(user_id, data);
-    return user;
+    if (data.password) {
+      data.password = await argon2.hash(data.password);
+    }
+    return await updateUserAction(user_id, data);
   } catch (error: any) {
     throw new Error(error?.message || "Error updating user");
   }
