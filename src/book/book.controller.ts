@@ -1,8 +1,9 @@
 import CreateBookAction from "./actions/create.book.action";
 import ReadOneBookAction from "./actions/readone.book.action";
 import ReadBooksAction from "./actions/read.book.action";
+import UpdateBookAction from "./actions/update.book.action";
 import { BookType } from "./book.model";
-import { CreateBookType, BookQueryType } from "./book.types";
+import { CreateBookType, BookQueryType, UpdateBookType } from "./book.types";
 
 function formatError(context: string, error: unknown): Error {
   const message = error instanceof Error ? error.message : "Unknown error";
@@ -56,4 +57,25 @@ async function readOneBook(bookId: string): Promise<BookType | null> {
   }
 }
 
-export { createBook, readBooks, readOneBook };
+async function updateBook(
+  bookId: string,
+  payload: UpdateBookType
+): Promise<BookType> {
+  try {
+    if (!bookId) {
+      throw new Error("Book ID is required");
+    }
+
+    const bookExists = await ReadOneBookAction(bookId);
+    if (!bookExists) {
+      throw new Error(`Book with ID ${bookId} does not exist`);
+    }
+
+    return await UpdateBookAction(bookId, payload);
+  } catch (error) {
+    console.error(`Error updating book ${bookId}:`, error);
+    throw formatError("Error updating book", error);
+  }
+}
+
+export { createBook, readBooks, readOneBook, updateBook };
